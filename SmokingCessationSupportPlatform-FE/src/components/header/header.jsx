@@ -48,8 +48,11 @@ function Header() {
                 Community
               </a>
 
-              <a href="/#" className={isActivePage("/#") ? "active" : ""}>
-                Article & Information
+              <a
+                href="/about-us"
+                className={isActivePage("/about-us") ? "active" : ""}
+              >
+                About Us
               </a>
             </nav>
           </div>

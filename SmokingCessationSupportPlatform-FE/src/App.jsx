@@ -38,15 +38,15 @@ import OthersProfile from "./pages/Profile/othersProfile/profile/othersProfile.j
 import OthersPosts from "./pages/Profile/othersProfile/posts/othersPosts.jsx";
 import UserPosts from "./pages/Profile/UserProfile/posts/userPosts.jsx";
 import { message, notification } from "antd";
-
+import AboutUs from "./pages/aboutUsPage/aboutUs.jsx";
 const ProtectRouteAuth = ({ children }) => {
   const user = useSelector((store) => store.user);
-  
+
   // Nếu chưa đăng nhập, cho phép truy cập trang auth
   if (user == null) {
     return children;
   }
-  
+
   // Nếu đã đăng nhập, chuyển hướng dựa theo role
   if (user.role === "admin") {
     return <Navigate to="/admin" replace />;
@@ -148,6 +148,10 @@ function App() {
       element: <Layout />,
       children: [
         { index: true, element: <Home /> },
+        {
+          path: "about-us",
+          element: <AboutUs />,
+        },
         {
           path: "login",
           element: (
@@ -288,7 +292,7 @@ function App() {
             { path: "clients", element: <MentorClients /> },
             { path: "clients/:clientId", element: <MentorClientDetails /> },
             { path: "reports", element: <MentorReports /> },
-          ]
+          ],
         },
       ],
     },

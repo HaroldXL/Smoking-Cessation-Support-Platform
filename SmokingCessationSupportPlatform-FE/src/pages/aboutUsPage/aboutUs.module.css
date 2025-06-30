@@ -1,0 +1,95 @@
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 60px 40px;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+}
+
+.title {
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #3478f6;
+}
+
+.headerImage {
+  display: block;
+  margin: 0 auto 50px;
+  max-width: 600px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sectionReverse {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: 60px;
+  gap: 40px;
+  flex-direction: row; /* ảnh trái, chữ phải */
+}
+
+.textBlock {
+  flex: 1;
+  min-width: 300px;
+}
+
+.subTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.list {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.list li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.image {
+  flex: 1;
+  max-width: 500px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  object-fit: cover;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sectionReverse {
+    flex-direction: column;
+  }
+
+  .image {
+    margin-bottom: 20px;
+  }
+
+  .container {
+    padding: 40px 20px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .subTitle {
+    font-size: 20px;
+  }
+}
