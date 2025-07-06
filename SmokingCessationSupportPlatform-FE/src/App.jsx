@@ -6,6 +6,14 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+// Import mentor pages từ các file có sẵn
+import MentorLayout from "./components/mentor/Layout";
+import MentorOverview from "./pages/MentorPages/Overview/Overview.jsx";
+import MentorAppointments from "./pages/MentorPages/Appointments/Appointment.jsx";
+import MentorClients from "./pages/MentorPages/Clients/Client.jsx";
+import MentorReports from "./pages/MentorPages/Reports/Report.jsx";
+import { MentorClientDetails } from "./pages/MentorPages/Clients/ClientDetails.jsx";
 import Home from "./pages/Home/home.jsx";
 import Login from "./pages/Authentication/Login/login.jsx";
 import Register from "./pages/Authentication/Register/register.jsx";
@@ -30,15 +38,22 @@ import OthersProfile from "./pages/Profile/othersProfile/profile/othersProfile.j
 import OthersPosts from "./pages/Profile/othersProfile/posts/othersPosts.jsx";
 import UserPosts from "./pages/Profile/UserProfile/posts/userPosts.jsx";
 import { message, notification } from "antd";
-
+import AboutUs from "./pages/aboutUsPage/aboutUs.jsx";
 const ProtectRouteAuth = ({ children }) => {
   const user = useSelector((store) => store.user);
+
+  // Nếu chưa đăng nhập, cho phép truy cập trang auth
   if (user == null) {
     return children;
-  } else if (user && user.role === "admin") {
-    return <Navigate to="/admin" />;
+  }
+
+  // Nếu đã đăng nhập, chuyển hướng dựa theo role
+  if (user.role === "admin") {
+    return <Navigate to="/admin" replace />;
+  } else if (user.role === "mentor") {
+    return <Navigate to="/mentor" replace />;
   } else {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 };
 
@@ -114,6 +129,18 @@ const ProtectAdminRoute = ({ children }) => {
   return children;
 };
 
+const ProtectMentorRoute = ({ children }) => {
+  const user = useSelector((store) => store.user);
+  if (user == null) {
+    return <Navigate to="/" />;
+  }
+  if (user.role !== "mentor") {
+    toast.error("Access denied! Mentor privileges required.");
+    return <Navigate to="/" />;
+  }
+  return children;
+};
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -121,6 +148,10 @@ function App() {
       element: <Layout />,
       children: [
         { index: true, element: <Home /> },
+        {
+          path: "about-us",
+          element: <AboutUs />,
+        },
         {
           path: "login",
           element: (
@@ -205,6 +236,7 @@ function App() {
         { path: "community", element: <Community /> },
         { path: "community/:postId", element: <PostDetail /> },
         { path: "user-coach", element: <UserCoach /> },
+        // Admin Routes
         {
           path: "admin",
           element: (
@@ -244,6 +276,23 @@ function App() {
               <CoachManagement />
             </ProtectAdminRoute>
           ),
+        },
+        // Mentor Routes
+        {
+          path: "mentor",
+          element: (
+            <ProtectMentorRoute>
+              <MentorLayout />
+            </ProtectMentorRoute>
+          ),
+          children: [
+            { index: true, element: <MentorOverview /> },
+            { path: "overview", element: <MentorOverview /> },
+            { path: "appointments", element: <MentorAppointments /> },
+            { path: "clients", element: <MentorClients /> },
+            { path: "clients/:clientId", element: <MentorClientDetails /> },
+            { path: "reports", element: <MentorReports /> },
+          ],
         },
       ],
     },

@@ -7,6 +7,7 @@
     border-top: 2px solid #f0eeee;
     border-bottom: 2px solid #f0eeee;
     color: #6F6C90;
+
 }
 
 .footer__logo-image {
@@ -26,6 +27,7 @@
     justify-content: space-between;
     width: 100%;
     padding-top: 40px;
+    max-width: 980px;
 }
 
 .footer__links-container {
