@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import styles from "./MembershipPayment.module.css";
 import AdminLayout from "../../../components/layout/AdminLayout.jsx";
-import FilterBar from '../../../components/admin/AdminReusableUI/FilterBar';
-import BulkActionBar from '../../../components/admin/AdminReusableUI/BulkActionBar';
-import ActionDropdown from '../../../components/admin/AdminReusableUI/ActionDropdown';
-import ReusableTable from '../../../components/admin/ReusableTable/ReusableTable';
-import dayjs from 'dayjs';
+import FilterBar from "../../../components/admin/AdminReusableUI/FilterBar";
+import BulkActionBar from "../../../components/admin/AdminReusableUI/BulkActionBar";
+import ActionDropdown from "../../../components/admin/AdminReusableUI/ActionDropdown";
+import ReusableTable from "../../../components/admin/ReusableTable/ReusableTable";
+import dayjs from "dayjs";
 
 const MembershipPayment = () => {
   // Mock data cho summary
   const summary = [
-    { label: "Payment Is Pending", value: 5, icon: "👥" },
-    { label: "Revenue This Month", value: 7, icon: "👥" },
-    { label: "Premium Member", value: "$1000", icon: "👥" },
-    { label: "Free Users", value: 2, icon: "👤" },
+    { label: "Total Pro Members", value: 5, icon: "👥" },
+    { label: "Expired Members", value: 7, icon: "👥" },
+    { label: "Total Revenue", value: "1000", icon: "$" },
   ];
 
   // Mock data cho bảng payment
@@ -25,7 +24,7 @@ const MembershipPayment = () => {
       email: "an.nguyen@example.com",
       amount: "$50",
       date: "2/1/2024",
-      status: "COMPLETED",
+      status: "ACTIVE",
     },
     {
       id: "VNP001XYZ",
@@ -34,7 +33,7 @@ const MembershipPayment = () => {
       email: "an.nguyen@example.com",
       amount: "$50",
       date: "2/1/2024",
-      status: "PENDING",
+      status: "ACTIVE",
     },
     {
       id: "VNP001XYZ",
@@ -43,7 +42,7 @@ const MembershipPayment = () => {
       email: "an.nguyen@example.com",
       amount: "$50",
       date: "2/1/2024",
-      status: "COMPLETED",
+      status: "EXPIRED",
     },
     {
       id: "VNP001XYZ",
@@ -52,7 +51,7 @@ const MembershipPayment = () => {
       email: "an.nguyen@example.com",
       amount: "$50",
       date: "2/1/2024",
-      status: "FAIL",
+      status: "EXPIRED",
     },
     {
       id: "VNP001XYZ",
@@ -61,7 +60,7 @@ const MembershipPayment = () => {
       email: "an.nguyen@example.com",
       amount: "$50",
       date: "2/1/2024",
-      status: "FAIL",
+      status: "ACTIVE",
     },
   ]);
 
@@ -76,16 +75,29 @@ const MembershipPayment = () => {
 
   // Hàm render badge status
   const renderStatus = (status) => {
-    if (status === "COMPLETED")
-      return <span className={`${styles["status-badge"]} ${styles["status-completed"]}`}>COMPLETED</span>;
-    if (status === "PENDING")
-      return <span className={`${styles["status-badge"]} ${styles["status-pending"]}`}>PENDING</span>;
-    return <span className={`${styles["status-badge"]} ${styles["status-fail"]}`}>FAIL</span>;
+    if (status === "ACTIVE")
+      return (
+        <span
+          className={`${styles["status-badge"]} ${styles["status-active"]}`}
+        >
+          ACTIVE
+        </span>
+      );
+    if (status === "EXPIRED")
+      return (
+        <span
+          className={`${styles["status-badge"]} ${styles["status-expired"]}`}
+        >
+          EXPIRED
+        </span>
+      );
   };
 
   useEffect(() => {
-    let result = payments.filter(payment => {
-      const matchSearch = payment.email.toLowerCase().includes(search.toLowerCase()) || payment.userId.toLowerCase().includes(search.toLowerCase());
+    let result = payments.filter((payment) => {
+      const matchSearch =
+        payment.email.toLowerCase().includes(search.toLowerCase()) ||
+        payment.userId.toLowerCase().includes(search.toLowerCase());
       const matchStatus = filterStatus ? payment.status === filterStatus : true;
       return matchSearch && matchStatus;
     });
@@ -93,24 +105,20 @@ const MembershipPayment = () => {
   }, [search, filterStatus, payments]);
 
   const columns = [
-    { title: 'Transaction ID', dataIndex: 'id' },
-    { title: 'Package name', dataIndex: 'package' },
-    { title: 'User ID', dataIndex: 'userId' },
-    { title: 'Email Users', dataIndex: 'email' },
-    { title: 'Amount', dataIndex: 'amount' },
-    { title: 'Payment Date', dataIndex: 'date', render: value => dayjs(value, ["D/M/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"]).format("DD/MM/YYYY") },
-    { title: 'Status', dataIndex: 'status', render: renderStatus },
+    { title: "Transaction ID", dataIndex: "id" },
+    { title: "Package name", dataIndex: "package" },
+    { title: "User ID", dataIndex: "userId" },
+    { title: "Email Users", dataIndex: "email" },
+    { title: "Amount", dataIndex: "amount" },
     {
-      title: 'Action',
-      dataIndex: 'action',
-      render: (value, row) => (
-        <ActionDropdown
-          actions={[
-            { key: 'view', label: 'View/Process', onClick: () => {} },
-          ]}
-        />
-      ),
+      title: "Payment Date",
+      dataIndex: "date",
+      render: (value) =>
+        dayjs(value, ["D/M/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"]).format(
+          "DD/MM/YYYY"
+        ),
     },
+    { title: "Status", dataIndex: "status", render: renderStatus },
   ];
 
   return (
@@ -129,33 +137,34 @@ const MembershipPayment = () => {
         </div>
         <div className={styles["tabs-row"]}>
           <div
-            className={`${styles["tab"]} ${activeTab === "history" ? styles["tab-active"] : ""}`}
+            className={`${styles["tab"]} ${
+              activeTab === "history" ? styles["tab-active"] : ""
+            }`}
             onClick={() => setActiveTab("history")}
-          >
-            Payment History
-          </div>
+          ></div>
           <div
-            className={`${styles["tab"]} ${activeTab === "plan" ? styles["tab-active"] : ""}`}
+            className={`${styles["tab"]} ${
+              activeTab === "plan" ? styles["tab-active"] : ""
+            }`}
             onClick={() => setActiveTab("plan")}
-          >
-            Payment Plan Management
-          </div>
+          ></div>
         </div>
         <FilterBar
           searchPlaceholder="Search by email, user ID..."
           searchValue={search}
-          onSearchChange={e => setSearch(e.target.value)}
-          filters={[{
-            placeholder: 'Filter status',
-            value: filterStatus,
-            onChange: setFilterStatus,
-            options: [
-              { value: '', label: 'All status' },
-              { value: 'COMPLETED', label: 'Completed' },
-              { value: 'PENDING', label: 'Pending' },
-              { value: 'FAIL', label: 'Fail' },
-            ]
-          }]}
+          onSearchChange={(e) => setSearch(e.target.value)}
+          filters={[
+            {
+              placeholder: "Filter status",
+              value: filterStatus,
+              onChange: setFilterStatus,
+              options: [
+                { value: "", label: "All status" },
+                { value: "ACTIVE", label: "Active" },
+                { value: "EXPIRED", label: "Expired" },
+              ],
+            },
+          ]}
         />
         {selectedRows.length > 0 && (
           <BulkActionBar
@@ -168,8 +177,14 @@ const MembershipPayment = () => {
           columns={columns}
           data={filteredPayments}
           selectedRowKeys={selectedRows}
-          onSelectAll={checked => setSelectedRows(checked ? filteredPayments.map(p => p.id) : [])}
-          onSelectRow={(id, checked) => setSelectedRows(prev => checked ? [...prev, id] : prev.filter(pid => pid !== id))}
+          onSelectAll={(checked) =>
+            setSelectedRows(checked ? filteredPayments.map((p) => p.id) : [])
+          }
+          onSelectRow={(id, checked) =>
+            setSelectedRows((prev) =>
+              checked ? [...prev, id] : prev.filter((pid) => pid !== id)
+            )
+          }
         />
       </div>
     </AdminLayout>

@@ -20,7 +20,7 @@
   padding: 24px 32px;
   min-width: 180px;
   text-align: center;
-  box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.06);
   border: 1px solid #e3e8f7;
 }
 .summary-label {
@@ -63,7 +63,8 @@
   margin-bottom: 24px;
 }
 
-.filter-select, .date-input {
+.filter-select,
+.date-input {
   padding: 8px 12px;
   border: 1px solid #e3e8f7;
   border-radius: 8px;
@@ -74,7 +75,7 @@
 .payment-table-wrapper {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.06);
   border: 1px solid #e3e8f7;
   padding: 0 0 12px 0;
 }
@@ -85,7 +86,8 @@
   font-size: 15px;
 }
 
-.payment-table th, .payment-table td {
+.payment-table th,
+.payment-table td {
   padding: 12px 10px;
   text-align: left;
 }
@@ -107,25 +109,13 @@
   font-weight: 500;
   display: inline-block;
 }
-.status-completed {
-  background: #d1fae5;
-  color: #059669;
-}
-.status-pending {
-  background: #fef3c7;
-  color: #b45309;
-}
-.status-fail {
-  background: #fee2e2;
-  color: #dc2626;
-}
 .status-active {
   background: #d1fae5;
   color: #059669;
 }
-.status-inactive {
-  background: #fee2e2;
-  color: #dc2626;
+.status-expired {
+  background: #fef3c7;
+  color: #b45309;
 }
 
 .action-btn.view {
@@ -172,7 +162,8 @@
 }
 
 @media (max-width: 900px) {
-  .summary-cards-row, .search-filter-row {
+  .summary-cards-row,
+  .search-filter-row {
     flex-direction: column;
     gap: 8px;
     align-items: stretch;
