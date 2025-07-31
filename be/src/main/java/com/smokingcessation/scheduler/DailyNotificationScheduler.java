@@ -11,7 +11,7 @@ public class DailyNotificationScheduler {
     private NotificationService notificationService;
 
     // 8h sáng mỗi ngày
-    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 0 11  * * ?")
     public void scheduleDailyNotification() {
         notificationService.sendDailyNotifications();
     }

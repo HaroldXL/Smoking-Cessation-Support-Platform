@@ -56,8 +56,8 @@ public class SecurityConfig {
                                 "/api/profile/mentors/{profileNameMentor}",
                                 "/api/triggers/categories",
                                 "/api/strategies/categories",
-                                "/api/reasons"
-
+                                "/api/reasons",
+                                "/api/notifications/**"
                         ).permitAll()
                         .requestMatchers("/api/profile").hasRole("ADMIN")
                         .requestMatchers("/api/profile/**").hasAnyRole("USER", "MENTOR", "ADMIN")
