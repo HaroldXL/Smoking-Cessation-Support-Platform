@@ -226,4 +226,47 @@ public class TaskService {
             }
         }
     }
+
+    @Transactional
+    public TaskFreeResponseDTO updateTaskStatusForUser(String email, Integer taskId, String status) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        PlanTasksFree task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found with ID: " + taskId));
+
+        if (!task.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("Unauthorized to update this task.");
+        }
+
+        try {
+            task.setStatus(PlanTasksFree.Status.valueOf(status));
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status: " + status);
+        }
+
+        PlanTasksFree updatedTask = taskRepository.save(task);
+
+        List<TaskSupportMeasure> taskSupportMeasures = taskSupportMeasureRepository.findByPlanTaskFree_TaskId(taskId);
+        List<TaskFreeResponseDTO.SupportMeasureDTO> supportMeasureDTOs = taskSupportMeasures.stream()
+                .map(tsm -> {
+                    TaskFreeResponseDTO.SupportMeasureDTO dto = new TaskFreeResponseDTO.SupportMeasureDTO();
+                    dto.setSupportMeasuresId(tsm.getSupportMeasure().getSupportMeasuresId());
+                    dto.setSupportMeasures(tsm.getSupportMeasure().getSupportMeasures());
+                    return dto;
+                }).collect(Collectors.toList());
+
+        TaskFreeResponseDTO response = new TaskFreeResponseDTO();
+        response.setTaskId(updatedTask.getTaskId());
+        response.setUserId(updatedTask.getUser().getUserId());
+        response.setTaskDay(updatedTask.getTaskDay());
+        response.setTargetCigarettes(updatedTask.getTargetCigarettes());
+        response.setStatus(updatedTask.getStatus().name());
+        response.setSupportMeasures(supportMeasureDTOs);
+        response.setCreatedAt(updatedTask.getCreatedAt());
+        response.setUpdatedAt(updatedTask.getUpdatedAt());
+
+        return response;
+    }
+
 }

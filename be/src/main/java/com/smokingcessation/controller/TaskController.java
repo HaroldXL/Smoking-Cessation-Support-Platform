@@ -87,4 +87,14 @@ public class TaskController {
         taskService.deleteTaskForFreeUser(principal.getName(), taskId);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/task-free/{taskId}/status")
+    public ResponseEntity<TaskFreeResponseDTO> updateTaskStatus(
+            Principal principal,
+            @PathVariable Integer taskId,
+            @RequestParam String status) {
+
+        TaskFreeResponseDTO updatedTask = taskService.updateTaskStatusForUser(principal.getName(), taskId, status);
+        return ResponseEntity.ok(updatedTask);
+    }
 }
