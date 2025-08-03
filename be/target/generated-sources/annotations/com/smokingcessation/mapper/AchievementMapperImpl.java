@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-07-14T21:46:32+0700",
+    date = "2025-08-03T13:52:44+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.7 (Oracle Corporation)"
 )
 @Component
@@ -49,6 +49,8 @@ public class AchievementMapperImpl implements AchievementMapper {
 
         badgeDTO.badgeId( userBadgeBadgeBadgeId( userBadge ) );
         badgeDTO.badgeType( userBadge.getBadgeType() );
+        badgeDTO.badgeName( userBadgeBadgeBadgeName( userBadge ) );
+        badgeDTO.badgeDescription( userBadgeBadgeBadgeDescription( userBadge ) );
         badgeDTO.badgeImageUrl( userBadge.getBadgeImageUrl() );
         badgeDTO.isActive( userBadge.isActive() );
         badgeDTO.earnedDate( userBadge.getEarnedDate() );
@@ -84,5 +86,35 @@ public class AchievementMapperImpl implements AchievementMapper {
             return null;
         }
         return badgeId;
+    }
+
+    private String userBadgeBadgeBadgeName(UserBadge userBadge) {
+        if ( userBadge == null ) {
+            return null;
+        }
+        Badge badge = userBadge.getBadge();
+        if ( badge == null ) {
+            return null;
+        }
+        String badgeName = badge.getBadgeName();
+        if ( badgeName == null ) {
+            return null;
+        }
+        return badgeName;
+    }
+
+    private String userBadgeBadgeBadgeDescription(UserBadge userBadge) {
+        if ( userBadge == null ) {
+            return null;
+        }
+        Badge badge = userBadge.getBadge();
+        if ( badge == null ) {
+            return null;
+        }
+        String badgeDescription = badge.getBadgeDescription();
+        if ( badgeDescription == null ) {
+            return null;
+        }
+        return badgeDescription;
     }
 }

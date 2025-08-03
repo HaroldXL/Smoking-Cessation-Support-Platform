@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-07-14T21:46:32+0700",
+    date = "2025-08-03T13:52:44+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.7 (Oracle Corporation)"
 )
 @Component
@@ -43,17 +43,17 @@ public class UserSmokingProfileMapperImpl implements UserSmokingProfileMapper {
             return null;
         }
 
-        UserSmokingProfile userSmokingProfile = new UserSmokingProfile();
+        UserSmokingProfile.UserSmokingProfileBuilder userSmokingProfile = UserSmokingProfile.builder();
 
-        userSmokingProfile.setUser( userMapper.toEntity( dto.getUser() ) );
-        userSmokingProfile.setProfileId( dto.getProfileId() );
-        userSmokingProfile.setCigarettesPerDay( dto.getCigarettesPerDay() );
-        userSmokingProfile.setCigarettesPerPack( dto.getCigarettesPerPack() );
-        userSmokingProfile.setCigarettePackCost( dto.getCigarettePackCost() );
-        userSmokingProfile.setQuitDate( dto.getQuitDate() );
-        userSmokingProfile.setEndDate( dto.getEndDate() );
-        userSmokingProfile.setStatus( dto.getStatus() );
+        userSmokingProfile.user( userMapper.toEntity( dto.getUser() ) );
+        userSmokingProfile.profileId( dto.getProfileId() );
+        userSmokingProfile.cigarettesPerDay( dto.getCigarettesPerDay() );
+        userSmokingProfile.cigarettesPerPack( dto.getCigarettesPerPack() );
+        userSmokingProfile.cigarettePackCost( dto.getCigarettePackCost() );
+        userSmokingProfile.quitDate( dto.getQuitDate() );
+        userSmokingProfile.endDate( dto.getEndDate() );
+        userSmokingProfile.status( dto.getStatus() );
 
-        return userSmokingProfile;
+        return userSmokingProfile.build();
     }
 }

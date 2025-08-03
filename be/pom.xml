@@ -34,29 +34,25 @@
 			<artifactId>java-dotenv</artifactId>
 			<version>5.2.2</version>
 		</dependency>
-<<<<<<< HEAD
-=======
 		<!-- Google API Client -->
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client</artifactId>
 			<version>1.31.5</version>
 		</dependency>
-
 		<!-- Google HTTP Client with Jackson -->
 		<dependency>
 			<groupId>com.google.http-client</groupId>
 			<artifactId>google-http-client-jackson2</artifactId>
 			<version>1.41.5</version>
 		</dependency>
-
 		<!-- Google Calendar API -->
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-calendar</artifactId>
 			<version>v3-rev411-1.25.0</version>
 		</dependency>
->>>>>>> c40a9f3a4bb380d3fe7bae8efa8d45e45b10bf1f
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
@@ -140,12 +136,6 @@
 			<version>5.12.0</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>

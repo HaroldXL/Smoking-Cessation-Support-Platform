@@ -12,10 +12,7 @@ import java.util.Optional;
 public interface ConsultationRepository extends JpaRepository<Consultation, Integer> {
     List<Consultation> findByUser(User user);
     List<Consultation> findByMentor(User mentor);
-<<<<<<< HEAD
-=======
     Optional<Consultation> findBySlot(ConsultationSlot slot);
->>>>>>> c40a9f3a4bb380d3fe7bae8efa8d45e45b10bf1f
     List<Consultation> findByMentorAndUser(User mentor, User user);
     List<Consultation> findByMentorAndSlot_SlotDate(User mentor, LocalDate slotDate);
     List<Consultation> findByMentor_Email(String email);

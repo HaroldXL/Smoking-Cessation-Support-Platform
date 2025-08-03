@@ -247,4 +247,35 @@ public class PlanTasksProService {
             }
         }
     }
+    // tính tỉ lệ hoàn thành tất cá task completed của user pro
+    public double getCompletionRate(Integer userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<PlanTasksPro> tasks = planTasksProRepository.findByUser(user);
+
+        if (tasks.isEmpty()) return 0.0;
+
+        long completedCount = tasks.stream()
+                .filter(task -> task.getStatus() == PlanTasksPro.Status.completed)
+                .count();
+
+        double rate = (completedCount * 100.0) / tasks.size();
+        return Math.round(rate * 100.0) / 100.0; // Làm tròn 2 số thập phân
+    }
+    // tính tỉ lệ hoàn thành task cúa task completed từ ngày ... đến ngay ... của user pro
+    public double getCompletionRateInPeriod(Integer userId, LocalDate from, LocalDate to) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<PlanTasksPro> tasks = planTasksProRepository.findByUserAndTaskDayBetween(user, from, to);
+
+        if (tasks.isEmpty()) return 0.0;
+
+        long completedCount = tasks.stream()
+                .filter(task -> task.getStatus() == PlanTasksPro.Status.completed)
+                .count();
+
+        double rate = (completedCount * 100.0) / tasks.size();
+        return Math.round(rate * 100.0) / 100.0; // Làm tròn 2 số thập phân
+    }
+
 }

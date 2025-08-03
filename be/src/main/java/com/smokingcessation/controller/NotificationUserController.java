@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/notifications/no")
 public class NotificationUserController {
 
     private final NotificationUserService notificationService;
@@ -22,7 +22,7 @@ public class NotificationUserController {
         return notificationService.getUserNotifications(userId);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNotification(@PathVariable Long id, @RequestParam Integer userId) {
+    public ResponseEntity<Void> deleteNotification(@PathVariable Integer id, @RequestParam Integer userId) {
         notificationService.deleteNotification(id, userId);
         return ResponseEntity.noContent().build();
     }

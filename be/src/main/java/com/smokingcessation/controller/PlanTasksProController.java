@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,7 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/plan-tasks-pro")
@@ -111,4 +114,32 @@ public class PlanTasksProController {
         PlanTasksProDTO updatedTask = planTasksProService.updateTask(taskId, userPrincipal.getName(), request);
         return ResponseEntity.ok(updatedTask);
     }
+// tỉ lệ task completed / total task
+    @GetMapping("/completion-rate/{userId}")
+    @PreAuthorize("hasRole('MENTOR') or hasRole('USER')")
+    public ResponseEntity<?> getCompletionRate(@PathVariable Integer userId) {
+        double rate = planTasksProService.getCompletionRate(userId);
+        return ResponseEntity.ok(Map.of(
+                "userId", userId,
+                "completionRate", rate
+        ));
+    }
+ // tỉ lệ hoàn thành từ ngày đến ngày
+    @GetMapping("/completion-rate-period")
+    @PreAuthorize("hasRole('MENTOR') or hasRole('USER')")
+    public ResponseEntity<?> getCompletionRateInPeriod(
+            @RequestParam Integer userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+
+        double rate = planTasksProService.getCompletionRateInPeriod(userId, from, to);
+        return ResponseEntity.ok(Map.of(
+                "userId", userId,
+                "from", from,
+                "to", to,
+                "completionRate", rate
+        ));
+    }
+
+
 }
