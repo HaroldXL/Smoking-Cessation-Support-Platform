@@ -148,7 +148,7 @@ public class DependencyService {
     }
 
     @Transactional
-    private void updateUserScore(Integer userId) {
+    public void updateUserScore(Integer userId) {
         List<UserDependencyResponse> responses = responseRepository.findByUser_UserId(userId);
 
         if (responses.isEmpty()) {
