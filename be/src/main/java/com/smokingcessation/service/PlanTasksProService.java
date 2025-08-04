@@ -278,4 +278,32 @@ public class PlanTasksProService {
         return Math.round(rate * 100.0) / 100.0; // Làm tròn 2 số thập phân
     }
 
+    // Thêm hàm này vào file PlanTasksProService.java
+
+    @Transactional
+    public PlanTasksProDTO userUpdateTaskStatus(String userEmail, Integer taskId, String newStatus) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userEmail));
+
+        PlanTasksPro task = planTasksProRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found with ID: " + taskId));
+
+        // Xác thực xem task này có thuộc về user đang đăng nhập không
+        if (!task.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("Authorization error: User cannot update a task that does not belong to them.");
+        }
+
+        // Kiểm tra xem trạng thái mới có hợp lệ không
+        try {
+            task.setStatus(PlanTasksPro.Status.valueOf(newStatus.toLowerCase()));
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status value: '" + newStatus + "'. Must be one of: pending, completed, missed.");
+        }
+
+        task.setUpdatedAt(LocalDateTime.now());
+        PlanTasksPro updatedTask = planTasksProRepository.save(task);
+
+        return planTasksProMapper.toDto(updatedTask);
+    }
+
 }

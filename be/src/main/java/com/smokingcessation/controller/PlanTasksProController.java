@@ -140,6 +140,31 @@ public class PlanTasksProController {
                 "completionRate", rate
         ));
     }
+    // Thêm hàm này vào file PlanTasksProController.java
+
+    @Operation(summary = "User tự cập nhật trạng thái task của mình (ví dụ: completed)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cập nhật thành công"),
+            @ApiResponse(responseCode = "403", description = "Không có quyền cập nhật task này"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy task")
+    })
+    @PutMapping("/my-tasks/{taskId}/status")
+    @PreAuthorize("hasRole('USER')") // Chỉ user mới có quyền này
+    public ResponseEntity<PlanTasksProDTO> userUpdateTaskStatus(
+            @Parameter(hidden = true) Principal userDetails,
+            @Parameter(description = "ID của task cần cập nhật") @PathVariable Integer taskId,
+            @Parameter(description = "Trạng thái mới (VD: completed)") @RequestBody Map<String, String> body) {
+
+        String newStatus = body.get("status");
+        if (newStatus == null || newStatus.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build(); // Hoặc trả về một thông báo lỗi cụ thể
+        }
+
+        String userEmail = userDetails.getName();
+        PlanTasksProDTO updatedTask = planTasksProService.userUpdateTaskStatus(userEmail, taskId, newStatus);
+
+        return ResponseEntity.ok(updatedTask);
+    }
 
 
 }
