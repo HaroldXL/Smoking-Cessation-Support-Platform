@@ -111,4 +111,31 @@ public class PlanTasksProController {
         PlanTasksProDTO updatedTask = planTasksProService.updateTask(taskId, userPrincipal.getName(), request);
         return ResponseEntity.ok(updatedTask);
     }
+
+    @Operation(summary = "User cập nhật trạng thái task của chính mình")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cập nhật thành công"),
+            @ApiResponse(responseCode = "403", description = "Không có quyền"),
+            @ApiResponse(responseCode = "404", description = "Task không tồn tại")
+    })
+    @PutMapping("/user/{taskId}/status")
+    public ResponseEntity<PlanTasksProDTO> userUpdateTaskStatus(
+            Principal principal,
+            @Parameter(description = "ID của task") @PathVariable Integer taskId,
+            @Parameter(description = "Trạng thái mới") @RequestBody String newStatus) {
+        String userEmail = principal.getName();
+        PlanTasksProDTO task = planTasksProService.userUpdateOwnTaskStatus(userEmail, taskId, newStatus);
+        return ResponseEntity.ok(task);
+
+    }
+
+    @DeleteMapping("/mentor/{taskId}")
+    @PreAuthorize("hasRole('MENTOR')")
+    public ResponseEntity<Void> deleteTaskAsMentor(
+            @PathVariable Integer taskId,
+            Principal principal) {
+        planTasksProService.deleteTaskAsMentor(principal.getName(), taskId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
