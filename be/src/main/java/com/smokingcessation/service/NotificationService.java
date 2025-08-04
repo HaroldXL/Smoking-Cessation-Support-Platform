@@ -200,6 +200,30 @@ public class NotificationService {
     }
 
     @Transactional
+    public void createTaskSelfFailedNotification(User user, LocalDate taskDay) {
+        Notification notification = Notification.builder()
+                .title("Task Marked as Failed")
+                .message(String.format("Hi %s, you marked your task on %s as failed. Don’t worry — just give your best on the next one!",
+                        user.getFullName(), taskDay.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
+                .notificationType(Notification.NotificationType.plan_failed)
+                .sender(null)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        notification = notificationRepository.save(notification);
+
+        UserNotification userNotification = UserNotification.builder()
+                .user(user)
+                .notification(notification)
+                .isRead(false)
+                .isHidden(false)
+                .receivedAt(LocalDateTime.now())
+                .build();
+
+        userNotificationRepository.save(userNotification);
+    }
+
+    @Transactional
     public void createTaskSuccessNotification(User user, User sender, LocalDate taskDay) {
         Notification notification = Notification.builder()
                 .title("Task Completed Successfully")

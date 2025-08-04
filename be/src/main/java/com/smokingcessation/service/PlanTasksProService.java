@@ -260,4 +260,59 @@ public class PlanTasksProService {
             }
         }
     }
+
+    @Transactional
+    public PlanTasksProDTO userUpdateOwnTaskStatus(String userEmail, Integer taskId, String newStatus) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        PlanTasksPro task = planTasksProRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!task.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("You are not allowed to update this task");
+        }
+
+        PlanTasksPro.Status status;
+        try {
+            status = PlanTasksPro.Status.valueOf(newStatus.toLowerCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status value");
+        }
+
+        if (status != PlanTasksPro.Status.failed && status != PlanTasksPro.Status.completed) {
+            throw new RuntimeException("You can only set status to 'failed' or 'completed'");
+        }
+
+        task.setStatus(status);
+        task.setUpdatedAt(LocalDateTime.now());
+
+        if (status == PlanTasksPro.Status.failed) {
+            notificationService.createTaskSelfFailedNotification(user, task.getTaskDay());
+        } else if (status == PlanTasksPro.Status.completed) {
+            notificationService.createTaskSuccessNotification(user, user, task.getTaskDay());
+        }
+
+        PlanTasksPro updatedTask = planTasksProRepository.save(task);
+        return planTasksProMapper.toDto(updatedTask);
+    }
+
+    @Transactional
+    public void deleteTaskAsMentor(String mentorEmail, Integer taskId) {
+        User mentor = userRepository.findByEmail(mentorEmail)
+                .orElseThrow(() -> new RuntimeException("Mentor not found"));
+
+        if (!"mentor".equals(mentor.getRole().name())) {
+            throw new RuntimeException("Only mentors can delete tasks");
+        }
+
+        PlanTasksPro task = planTasksProRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!task.getMentor().getUserId().equals(mentor.getUserId())) {
+            throw new RuntimeException("You are not allowed to delete this task");
+        }
+
+        planTasksProRepository.delete(task);
+    }
 }
