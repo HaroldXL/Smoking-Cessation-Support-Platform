@@ -122,15 +122,28 @@ public class PlanTasksProService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         PlanTasksPro task = planTasksProRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
+
         if (!task.getUser().getUserId().equals(user.getUserId())) {
             throw new RuntimeException("User is not authorized to update this task");
         }
+
+        PlanTasksPro.Status status;
         try {
-            task.setStatus(PlanTasksPro.Status.valueOf(newStatus));
+            status = PlanTasksPro.Status.valueOf(newStatus);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid status value");
         }
+
+        task.setStatus(status);
         task.setUpdatedAt(LocalDateTime.now());
+
+        // Gửi thông báo nếu người dùng cập nhật thành FAILED
+        if (status == PlanTasksPro.Status.failed) {
+            notificationService.createTaskFailedNotification(user, user, task.getTaskDay());
+        }else if (status == PlanTasksPro.Status.completed) {
+            notificationService.createTaskSuccessNotification(user, user, task.getTaskDay());
+        }
+
         PlanTasksPro updatedTask = planTasksProRepository.save(task);
         return planTasksProMapper.toDto(updatedTask);
     }
@@ -216,7 +229,7 @@ public class PlanTasksProService {
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
         if (!task.getMentor().getEmail().equals(mentorEmail)) {
-            throw new RuntimeException("Only the assigned mentor can update this task");
+            throw new RuntimeException( "Only the assigned mentor can update this task");
         }
 
         if (request.getTargetCigarettes() != null && request.getTargetCigarettes() >= 0) {

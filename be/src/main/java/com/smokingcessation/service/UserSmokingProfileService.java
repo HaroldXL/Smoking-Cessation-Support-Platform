@@ -9,6 +9,7 @@ import com.smokingcessation.model.UserSmokingProfile;
 import com.smokingcessation.repository.SmokingEventRepository;
 import com.smokingcessation.repository.UserRepository;
 import com.smokingcessation.repository.UserSmokingProfileRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,19 +22,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserSmokingProfileService {
 
     private final UserRepository userRepository;
     private final UserSmokingProfileRepository userSmokingProfileRepository;
     private final UserSmokingProfileMapper mapper;
     private final SmokingEventRepository smokingEventRepository;
-
-    public UserSmokingProfileService(UserRepository userRepository, UserSmokingProfileRepository userSmokingProfileRepository, UserSmokingProfileMapper mapper, SmokingEventRepository smokingEventRepository) {
-        this.userRepository = userRepository;
-        this.userSmokingProfileRepository = userSmokingProfileRepository;
-        this.mapper = mapper;
-        this.smokingEventRepository = smokingEventRepository;
-    }
 
     public List<UserSmokingProfileRequest> getAllProfilesByEmail(String email) {
         User user = userRepository.findByEmail(email)

@@ -60,7 +60,7 @@ public class TaskService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy kế hoạch bỏ thuốc đang hoạt động"));
 
         // Validate target cigarettes
-        if (createDTO.getTargetCigarettes() <= 0) {
+        if (createDTO.getTargetCigarettes() < 0) {
             throw new RuntimeException("Số thuốc mục tiêu phải lớn hơn 0.");
         }
 

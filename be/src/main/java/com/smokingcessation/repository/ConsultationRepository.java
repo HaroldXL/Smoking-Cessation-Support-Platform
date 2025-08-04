@@ -17,4 +17,5 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Inte
     List<Consultation> findByMentor_Email(String email);
     List<Consultation> findByMentorAndStatus(User mentor, Consultation.Status status);
     Optional<Consultation> findByConsultationId(Integer consultationId);
+    List<Consultation> findBySlot_SlotDateAndStatus(LocalDate slotDate, Consultation.Status status);
 }

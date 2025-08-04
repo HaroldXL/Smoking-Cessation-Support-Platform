@@ -46,6 +46,7 @@ public class Notification {
         achievement_unlocked,
         mentor_message,
         system,
-        plan_failed
+        plan_failed,
+        plan_success
     }
 }

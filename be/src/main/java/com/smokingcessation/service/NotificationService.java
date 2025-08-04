@@ -200,6 +200,29 @@ public class NotificationService {
     }
 
     @Transactional
+    public void createTaskSuccessNotification(User user, User sender, LocalDate taskDay) {
+        Notification notification = Notification.builder()
+                .title("Task Completed Successfully")
+                .message(String.format("Hi %s, your task for %s was marked as completed. Great job!",
+                        user.getFullName(), taskDay.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
+                .notificationType(Notification.NotificationType.plan_success)
+                .sender(sender)
+                .createdAt(LocalDateTime.now())
+                .build();
+        notification = notificationRepository.save(notification);
+
+        UserNotification userNotification = UserNotification.builder()
+                .user(user)
+                .notification(notification)
+                .isRead(false)
+                .isHidden(false)
+                .receivedAt(LocalDateTime.now())
+                .build();
+        userNotificationRepository.save(userNotification);
+    }
+
+
+    @Transactional
     public void sendCustomNotification(User mentor, User receiver, String title, String message) {
         Notification notification = Notification.builder()
                 .title(title)

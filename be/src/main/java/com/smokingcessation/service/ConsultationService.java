@@ -8,13 +8,14 @@ import com.smokingcessation.mapper.SmokingEventMapper;
 import com.smokingcessation.mapper.UserMapper;
 import com.smokingcessation.model.*;
 import com.smokingcessation.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -580,7 +581,19 @@ public class ConsultationService {
                 .build();
     }
 
+    @Transactional
+    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Ho_Chi_Minh")
+    public void sendDailyConsultationReminders() {
+        LocalDate today = LocalDate.now();
+        List<Consultation> consultations = consultationRepository.findBySlot_SlotDateAndStatus(today, Consultation.Status.scheduled);
 
+        for (Consultation consultation : consultations) {
+            User user = consultation.getUser();
+            User mentor = consultation.getMentor();
+            LocalDate slotDate = consultation.getSlot().getSlotDate();
+            Integer slotNumber = consultation.getSlot().getSlotNumber();
 
-
+            notificationService.sendDailyConsultationReminder(user, mentor, slotDate, slotNumber);
+        }
+    }
 }
