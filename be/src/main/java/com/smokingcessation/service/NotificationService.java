@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -350,4 +351,43 @@ public class NotificationService {
         notifications.forEach(notification -> notification.setIsHidden(true));
         userNotificationRepository.saveAll(notifications);
     }
+
+    private static final List<String> DAILY_MOTIVATIONAL_MESSAGES = List.of(
+            "Every cigarette you don't smoke is a victory!",
+            "Keep going — you're stronger than any craving.",
+            "Small steps lead to big changes. You've got this!",
+            "Quitting is tough, but so are you!",
+            "You're doing amazing. One day at a time!",
+            "Remember why you started. Keep pushing!",
+            "Each smoke-free day is a step closer to freedom."
+    );
+
+    @Transactional
+    public void sendDailyMotivationNotificationToAll(List<User> users) {
+        // Chọn thông điệp ngẫu nhiên
+        String message = DAILY_MOTIVATIONAL_MESSAGES.get((int) (Math.random() * DAILY_MOTIVATIONAL_MESSAGES.size()));
+
+        Notification notification = Notification.builder()
+                .title("Daily Motivation")
+                .message(message)
+                .notificationType(Notification.NotificationType.system)
+                .sender(null)
+                .createdAt(LocalDateTime.now())
+                .build();
+        notification = notificationRepository.save(notification);
+
+        List<UserNotification> userNotifications = new ArrayList<>();
+        for (User user : users) {
+            userNotifications.add(UserNotification.builder()
+                    .user(user)
+                    .notification(notification)
+                    .isRead(false)
+                    .isHidden(false)
+                    .receivedAt(LocalDateTime.now())
+                    .build());
+        }
+        userNotificationRepository.saveAll(userNotifications);
+    }
+
+
 }

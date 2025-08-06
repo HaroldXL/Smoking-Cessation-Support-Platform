@@ -372,8 +372,6 @@ public class ConsultationService {
                 .toList();
     }
 
-
-
     public void completeConsultation(Integer consultationId, String mentorEmail) {
         User mentor = userRepository.findByEmail(mentorEmail)
                 .orElseThrow(() -> new RuntimeException("Mentor not found"));
@@ -595,5 +593,43 @@ public class ConsultationService {
 
             notificationService.sendDailyConsultationReminder(user, mentor, slotDate, slotNumber);
         }
+    }
+
+    public void cancelConsultationAsMentor(String mentorEmail, Integer consultationId) {
+        User mentor = userRepository.findByEmail(mentorEmail)
+                .orElseThrow(() -> new RuntimeException("Mentor not found"));
+
+        Consultation consultation = consultationRepository.findById(consultationId)
+                .orElseThrow(() -> new RuntimeException("Consultation not found"));
+
+        if (!consultation.getMentor().getUserId().equals(mentor.getUserId())) {
+            throw new RuntimeException("You are not authorized to cancel this consultation");
+        }
+
+        if (consultation.getStatus() == Consultation.Status.completed) {
+            throw new RuntimeException("Cannot cancel a completed consultation");
+        }
+        if (consultation.getStatus() == Consultation.Status.cancelled) {
+            throw new RuntimeException("Consultation is already cancelled");
+        }
+
+        consultation.setStatus(Consultation.Status.cancelled);
+
+        ConsultationSlot slot = consultation.getSlot();
+        slot.setIsBooked(false);
+        slotRepository.save(slot);
+
+        consultationRepository.save(consultation);
+
+        // Notify user
+        notificationService.sendCustomNotification(
+                null,
+                consultation.getUser(),
+                "Consultation Cancelled by Mentor",
+                String.format("Your consultation with Mentor %s on %s, slot %d has been cancelled by the mentor.",
+                        mentor.getFullName(),
+                        slot.getSlotDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        slot.getSlotNumber())
+        );
     }
 }

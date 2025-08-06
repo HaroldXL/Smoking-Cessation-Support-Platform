@@ -140,7 +140,15 @@ public class ConsultationController {
         return ResponseEntity.ok(dto);
     }
 
-
-
+    @Operation(summary = "Mentor hủy buổi tư vấn của mình")
+    @PreAuthorize("hasRole('MENTOR')")
+    @PostMapping("/mentor/{id}/cancel")
+    public ResponseEntity<String> cancelConsultationAsMentor(
+            @PathVariable("id") Integer consultationId,
+            Principal principal) {
+        String mentorEmail = principal.getName();
+        consultationService.cancelConsultationAsMentor(mentorEmail, consultationId);
+        return ResponseEntity.ok("Consultation cancelled by mentor successfully");
+    }
 
 }

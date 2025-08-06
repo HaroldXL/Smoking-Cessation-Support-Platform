@@ -248,7 +248,7 @@ public class PlanTasksProService {
         return planTasksProMapper.toDto(planTasksProRepository.save(task));
     }
 
-    @Scheduled(cron = "0 0 8 * * ?", zone = "Asia/Ho_Chi_Minh")
+    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Ho_Chi_Minh")
     @Transactional
     public void sendMorningTaskRemindersForProUsers() {
         LocalDate today = LocalDate.now();

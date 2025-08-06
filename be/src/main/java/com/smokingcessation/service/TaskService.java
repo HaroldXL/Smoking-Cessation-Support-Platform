@@ -214,7 +214,7 @@ public class TaskService {
         }
     }
 
-    @Scheduled(cron = "0 0 8 * * ?", zone = "Asia/Ho_Chi_Minh")
+    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Ho_Chi_Minh")
     @Transactional
     public void sendMorningTaskRemindersForFreeUsers() {
         LocalDate today = LocalDate.now();
