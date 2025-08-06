@@ -79,7 +79,7 @@ const UserManagement = () => {
             status: u.isBlock ? "locked" : "active",
           };
         });
-        setUsers(transformedUsers);
+        setUsers(transformedUsers); // lưu vào state users
       } catch (err) {
         console.error("Failed to fetch users", err);
         message.error("Failed to fetch users. Please try again.");
@@ -113,7 +113,7 @@ const UserManagement = () => {
         return matchSearch && matchMembership && matchStatus && matchRole;
       });
 
-      setFilteredUsers(result);
+      setFilteredUsers(result); // lưu vào state filteredUsers
       setSelectedRowKeys([]); // Reset selection khi filter
     };
 
