@@ -125,10 +125,6 @@ public class PostService {
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        if (!post.getUser().getEmail().equals(userEmail)) {
-            throw new RuntimeException("You do not have permission to update this post");
-        }
-
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setPostType(request.getPostType());
