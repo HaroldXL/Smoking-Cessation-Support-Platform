@@ -147,11 +147,11 @@ public class SmokingEventService {
                     .sum();
 
             int expected = cigarettesPerDay * (int) daysSinceStart;
-            int avoided = Math.max(expected - totalSmoked, 0);
+            int avoided = expected - totalSmoked;
 
             BigDecimal expectedCost = pricePerCigarette.multiply(BigDecimal.valueOf(expected));
             BigDecimal spentCost = pricePerCigarette.multiply(BigDecimal.valueOf(totalSmoked));
-            BigDecimal moneySaved = expectedCost.subtract(spentCost).max(BigDecimal.ZERO);
+            BigDecimal moneySaved = expectedCost.subtract(spentCost);
 
             String planResult = userSmokingProfileService.evaluatePlanResult(user.getEmail(), profile.getProfileId());
 
