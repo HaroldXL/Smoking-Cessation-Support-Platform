@@ -280,57 +280,68 @@ export const Appointment = () => {
 
     setUpdatingConsultation(true);
     try {
-      // Map frontend status values to backend enum values
-      const statusMapping = {
-        scheduled: "scheduled",
-        completed: "completed",
-        cancelled: "cancelled",
-      };
-
-      const backendStatus =
-        statusMapping[consultationStatus] ||
-        consultationStatus.toUpperCase().replace("-", "_");
-
-      // Prepare the request data with proper status formatting
-      const requestData = {
-        status: backendStatus,
-        ...(consultationNotes.trim() && { notes: consultationNotes.trim() }),
-      };
-
-      console.log("Updating consultation with data:", requestData);
-      console.log("Frontend status:", consultationStatus);
-      console.log("Backend status:", backendStatus);
-      console.log("Consultation ID:", selectedSlot.consultationId);
-
-      // Try the request with status in body first
-      try {
-        await api.patch(
-          `/consultations/${selectedSlot.consultationId}/status-note`,
-          requestData
+      // Handle cancellation separately
+      if (consultationStatus === "cancelled") {
+        await api.post(
+          `/consultations/mentor/${selectedSlot.consultationId}/cancel`
         );
-      } catch (firstError) {
-        // If that fails, try with status as query parameter
-        console.log(
-          "First attempt failed, trying with query parameters...",
-          firstError.message
-        );
-        const params = new URLSearchParams();
-        params.append("status", backendStatus);
-        if (consultationNotes.trim()) {
-          params.append("notes", consultationNotes.trim());
+
+        Modal.success({
+          title: "Success",
+          content: "Consultation cancelled successfully!",
+        });
+      } else {
+        // Handle completed and other statuses with the original API
+        const statusMapping = {
+          scheduled: "scheduled",
+          completed: "completed",
+        };
+
+        const backendStatus =
+          statusMapping[consultationStatus] ||
+          consultationStatus.toUpperCase().replace("-", "_");
+
+        // Prepare the request data with proper status formatting
+        const requestData = {
+          status: backendStatus,
+          ...(consultationNotes.trim() && { notes: consultationNotes.trim() }),
+        };
+
+        console.log("Updating consultation with data:", requestData);
+        console.log("Frontend status:", consultationStatus);
+        console.log("Backend status:", backendStatus);
+        console.log("Consultation ID:", selectedSlot.consultationId);
+
+        // Try the request with status in body first
+        try {
+          await api.patch(
+            `/consultations/${selectedSlot.consultationId}/status-note`,
+            requestData
+          );
+        } catch (firstError) {
+          // If that fails, try with status as query parameter
+          console.log(
+            "First attempt failed, trying with query parameters...",
+            firstError.message
+          );
+          const params = new URLSearchParams();
+          params.append("status", backendStatus);
+          if (consultationNotes.trim()) {
+            params.append("notes", consultationNotes.trim());
+          }
+
+          await api.patch(
+            `/consultations/${
+              selectedSlot.consultationId
+            }/status-note?${params.toString()}`
+          );
         }
 
-        await api.patch(
-          `/consultations/${
-            selectedSlot.consultationId
-          }/status-note?${params.toString()}`
-        );
+        Modal.success({
+          title: "Success",
+          content: "Consultation updated successfully!",
+        });
       }
-
-      Modal.success({
-        title: "Success",
-        content: "Consultation updated successfully!",
-      });
 
       setConsultationModalVisible(false);
 
@@ -1113,10 +1124,13 @@ export const Appointment = () => {
                           marginBottom: 4,
                         }}
                       >
-                        {smokingProgress.moneySaved}
+                        {Math.round(smokingProgress.moneySaved).toLocaleString(
+                          "vi-VN",
+                          { maximumFractionDigits: 0 }
+                        )}
                       </div>
                       <Text style={{ fontSize: "12px", color: "#8c8c8c" }}>
-                        MONEY SAVED
+                        VND SAVED
                       </Text>
                     </div>
                   </Col>
@@ -1273,7 +1287,14 @@ export const Appointment = () => {
                       >
                         PACK COST
                       </Text>
-                      <Text strong>{smokingProgress.cigarettePackCost}</Text>
+                      <Text strong>
+                        {Math.round(
+                          smokingProgress.cigarettePackCost
+                        ).toLocaleString("vi-VN", {
+                          maximumFractionDigits: 0,
+                        })}{" "}
+                        VND
+                      </Text>
                     </div>
                   </Col>
                 </Row>

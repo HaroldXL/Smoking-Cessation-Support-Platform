@@ -40,7 +40,6 @@ import {
   PlusOutlined,
   BellOutlined,
   DeleteOutlined,
-  MoreOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import { coachService } from "../../../services/coachService";
@@ -125,9 +124,6 @@ export const MentorClientDetails = () => {
 
   const [notesModalVisible, setNotesModalVisible] = useState(false);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
-  const [coachNotes, setCoachNotes] = useState("");
-  const [savingNotes, setSavingNotes] = useState(false);
-  const [latestConsultationId, setLatestConsultationId] = useState(null);
 
   const [userTasks, setUserTasks] = useState([]);
   const [taskModalVisible, setTaskModalVisible] = useState(false);
@@ -140,7 +136,6 @@ export const MentorClientDetails = () => {
     useState(false);
   const [notificationForm] = Form.useForm();
   const [sendingNotification, setSendingNotification] = useState(false);
-  const [updatingTaskId, setUpdatingTaskId] = useState(null);
 
   useEffect(() => {
     const buildClientData = (consultations, progressData) => {
@@ -240,11 +235,6 @@ export const MentorClientDetails = () => {
         setUserQuestions(questions || []);
         setUserBadges(badges || []);
         setAddictionScore(scoreData);
-        setLatestConsultationId(clientInfo.latestConsultationId);
-
-        if (clientInfo?.detailedInfo?.notes) {
-          setCoachNotes(clientInfo.detailedInfo.notes);
-        }
       } catch (err) {
         setError("Failed to load client data");
         console.error(err);
@@ -320,38 +310,6 @@ export const MentorClientDetails = () => {
     setNotesModalVisible(true);
   };
 
-  const saveCoachNotes = async () => {
-    if (!latestConsultationId || !coachNotes.trim()) {
-      Modal.warning({
-        title: "Cannot Save Notes",
-        content:
-          "No consultation found or notes are empty. Please ensure there is at least one consultation for this client.",
-      });
-      return;
-    }
-
-    setSavingNotes(true);
-    try {
-      await coachService.addConsultationNote(latestConsultationId, coachNotes);
-      setClientData((prev) => ({
-        ...prev,
-        detailedInfo: { ...prev.detailedInfo, notes: coachNotes },
-      }));
-      Modal.success({
-        title: "Notes Saved",
-        content: "Your notes have been saved successfully.",
-      });
-    } catch (error) {
-      console.error("Failed to save notes:", error);
-      Modal.error({
-        title: "Save Failed",
-        content: "Failed to save notes. Please try again.",
-      });
-    } finally {
-      setSavingNotes(false);
-    }
-  };
-
   const fetchUserTasks = async () => {
     setLoadingTasks(true);
     try {
@@ -406,61 +364,12 @@ export const MentorClientDetails = () => {
       fetchUserTasks();
     } catch (error) {
       console.error("Failed to save task:", error);
-      message.error("Failed to save task. Please try again.");
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to save task. Please try again.";
+      message.error(errorMessage);
     }
-  };
-
-  const handleUpdateTaskStatus = (taskId, newStatus) => {
-    Modal.confirm({
-      title: `Mark Task as ${
-        newStatus.charAt(0).toUpperCase() + newStatus.slice(1)
-      }`,
-      content: `Are you sure you want to mark this task as ${newStatus}?`,
-      okText: "Yes",
-      cancelText: "No",
-      onOk: async () => {
-        try {
-          setUpdatingTaskId(taskId);
-          await coachService.updateTaskStatus(taskId, newStatus);
-          message.success(`Task marked as ${newStatus}`);
-          fetchUserTasks();
-        } catch (error) {
-          console.error("Failed to update task status:", error);
-          message.error("Failed to update task status. Please try again.");
-        } finally {
-          setUpdatingTaskId(null);
-        }
-      },
-    });
-  };
-
-  const getTaskActions = (task) => {
-    if (task.status !== "pending") {
-      return [];
-    }
-
-    return [
-      {
-        key: "completed",
-        label: (
-          <Space>
-            <CheckCircleOutlined style={{ color: "#52c41a" }} />
-            Mark as Completed
-          </Space>
-        ),
-        onClick: () => handleUpdateTaskStatus(task.taskId, "completed"),
-      },
-      {
-        key: "failed",
-        label: (
-          <Space>
-            <CloseCircleOutlined style={{ color: "#ff4d4f" }} />
-            Mark as Failed
-          </Space>
-        ),
-        onClick: () => handleUpdateTaskStatus(task.taskId, "failed"),
-      },
-    ];
   };
 
   const handleDeleteTask = (taskId) => {
@@ -896,35 +805,6 @@ export const MentorClientDetails = () => {
                   </div>
                 </Card>
               </Col>
-
-              <Col span={24}>
-                {/* Coach Notes */}
-                <Card
-                  title="Coach's Private Notes"
-                  className={styles.notesCard}
-                  extra={
-                    <Button
-                      type="primary"
-                      size="small"
-                      icon={<EditOutlined />}
-                      onClick={saveCoachNotes}
-                      loading={savingNotes}
-                      disabled={!coachNotes.trim() || !latestConsultationId}
-                      className={styles.saveNotesButton}
-                    >
-                      Save Notes
-                    </Button>
-                  }
-                >
-                  <TextArea
-                    rows={6}
-                    value={coachNotes}
-                    onChange={(e) => setCoachNotes(e.target.value)}
-                    placeholder="Add your private notes about this client..."
-                    className={styles.notesTextArea}
-                  />
-                </Card>
-              </Col>
             </Row>
           </Tabs.TabPane>
 
@@ -1025,12 +905,11 @@ export const MentorClientDetails = () => {
                     <Statistic
                       title="Money Saved"
                       value={smokingProgress.moneySaved}
-                      prefix={<DollarOutlined style={{ color: "#52c41a" }} />}
                       valueStyle={{ color: "#52c41a" }}
                     />
                     <Text type="secondary" className={styles.progressStatText}>
                       Pack cost:{" "}
-                      {smokingProgress.cigarettePackCost?.toLocaleString()}
+                      {smokingProgress.cigarettePackCost?.toLocaleString()} VND
                     </Text>
                   </Card>
                 </Col>
@@ -1372,32 +1251,6 @@ export const MentorClientDetails = () => {
                             >
                               Edit
                             </Button>,
-                            task.status === "pending" ? (
-                              <Dropdown
-                                key="status"
-                                menu={{ items: getTaskActions(task) }}
-                                trigger={["click"]}
-                                placement="bottomRight"
-                              >
-                                <Button
-                                  type="text"
-                                  loading={updatingTaskId === task.taskId}
-                                >
-                                  Update Status
-                                </Button>
-                              </Dropdown>
-                            ) : (
-                              <Button
-                                key="completed"
-                                type="text"
-                                icon={<CheckCircleOutlined />}
-                                disabled
-                              >
-                                {task.status === "completed"
-                                  ? "Completed"
-                                  : "Failed"}
-                              </Button>
-                            ),
                             <Button
                               key="delete"
                               type="text"
